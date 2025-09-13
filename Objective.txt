@@ -1,0 +1,96 @@
+OVMS-Style CAN Logger + Cloud Telemetry Project Plan
+
+Objective: Build a mini telemetry system that simulates vehicle CAN messages, logs them locally, sends data to the cloud via MQTT, and optionally visualizes it.
+
+---
+
+Milestone 1: Fake CAN Data Generator
+Goal: Generate simulated vehicle data in C++.
+Tasks:
+
+1. Write a C++ program that generates “CAN messages” every second.
+
+   * Example signals: Speed (0–200 km/h), RPM (0–7000), Battery SOC (0–100%)
+2. Represent each message as a struct with signal name, value, and timestamp.
+3. Print messages to console.
+   Skills Learned: C++ basics, structs/classes, random numbers, console output.
+   Libraries: Standard C++ (no extra dependencies).
+
+---
+
+Milestone 2: Data Logger
+Goal: Store CAN messages locally.
+Tasks:
+
+1. Save data to a simple .txt file initially.
+2. Upgrade to SQLite for structured storage.
+3. Add timestamps and message IDs to mimic real CAN logs.
+   Skills Learned: File I/O, database handling, struct-to-row mapping.
+   Libraries: SQLiteCpp ([https://github.com/SRombauts/SQLiteCpp](https://github.com/SRombauts/SQLiteCpp)).
+
+---
+
+Milestone 3: MQTT Telemetry
+Goal: Publish simulated CAN messages to the cloud.
+Tasks:
+
+1. Install a free MQTT broker:
+
+   * Cloud: HiveMQ ([https://www.hivemq.com/demos/websocket-client/](https://www.hivemq.com/demos/websocket-client/))
+   * Local: Eclipse Mosquitto ([https://mosquitto.org/download/](https://mosquitto.org/download/))
+2. Connect your C++ program to the broker and publish messages every second.
+3. Implement topics per signal (e.g., /vehicle/speed, /vehicle/soc).
+   Skills Learned: Networking, publish/subscribe model, IoT communication.
+   Libraries: Paho MQTT C++ ([https://github.com/eclipse/paho.mqtt.cpp](https://github.com/eclipse/paho.mqtt.cpp)).
+
+---
+
+Milestone 4: Visualization
+Goal: Display telemetry in real-time.
+Options:
+
+1. Easy: Use HiveMQ Web Client to view MQTT messages.
+2. Advanced:
+
+   * Set up InfluxDB + Grafana (free versions).
+   * Push MQTT messages into InfluxDB.
+   * Build live dashboards: speed, SOC, RPM vs. time.
+     Skills Learned: Dashboard visualization, real-time data analysis.
+
+---
+
+Project Structure (GitHub Ready):
+ovms-telemetry/
+├── milestone1\_fake\_can/         # C++ console program (fake CAN messages)
+├── milestone2\_logger/           # File + SQLite logging
+├── milestone3\_mqtt/             # Publish to MQTT broker
+├── milestone4\_dashboard/        # Grafana / visualization setup
+└── README.md                    # Documentation + architecture diagrams
+
+---
+
+Optional Extensions:
+
+* Trigger-based black box recorder: store last 30 seconds of data and dump on event.
+* Simulated multiple ECUs: engine, battery, brake.
+* Fault injection: simulate sensor failure or abnormal readings.
+* OTA update simulation: update your simulated firmware and log the version.
+
+---
+
+Tools Needed (Free):
+
+* C++ Compiler / IDE: VS Code + GCC/Clang (Linux recommended)
+* Database: SQLite + SQLiteCpp
+* Networking: Paho MQTT C++
+* Dashboard: Grafana + InfluxDB (optional)
+* GitHub: version control and portfolio showcase
+
+---
+
+Why This Project is Valuable:
+
+* Demonstrates C++ programming, data handling, and system-level thinking.
+* Simulates IoT/embedded system architecture relevant to automotive, drones, and smart devices.
+* Teaches cloud integration, MQTT, and dashboards — transferable to many industries.
+* Creates a portfolio-ready project that can be shown to recruiters.
