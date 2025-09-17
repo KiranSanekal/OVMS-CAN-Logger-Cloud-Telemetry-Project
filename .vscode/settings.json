@@ -54,6 +54,9 @@
         "xutility": "cpp",
         "iomanip": "cpp",
         "sstream": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "ratio": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
     }
 }

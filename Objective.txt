@@ -28,6 +28,7 @@ Tasks:
    Skills Learned: File I/O, database handling, struct-to-row mapping.
    Libraries: SQLiteCpp ([https://github.com/SRombauts/SQLiteCpp](https://github.com/SRombauts/SQLiteCpp)).
 
+
 ---
 
 Milestone 3: MQTT Telemetry
