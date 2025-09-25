@@ -79,19 +79,10 @@ Optional Extensions:
 
 ---
 
-Tools Needed (Free):
+Tools Needed:
 
 * C++ Compiler / IDE: VS Code + GCC/Clang (Linux recommended)
 * Database: SQLite + SQLiteCpp
 * Networking: Paho MQTT C++
 * Dashboard: Grafana + InfluxDB (optional)
 * GitHub: version control and portfolio showcase
-
----
-
-Why This Project is Valuable:
-
-* Demonstrates C++ programming, data handling, and system-level thinking.
-* Simulates IoT/embedded system architecture relevant to automotive, drones, and smart devices.
-* Teaches cloud integration, MQTT, and dashboards — transferable to many industries.
-* Creates a portfolio-ready project that can be shown to recruiters.

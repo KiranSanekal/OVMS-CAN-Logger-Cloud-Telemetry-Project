@@ -7,6 +7,12 @@
 #include <fstream>
 #include<iostream>
 #include<vector>
+extern "C" {
+#include <sqlite3.h>
+}
+
+
+
 //using namespace std;
 
 struct canSignal
@@ -22,6 +28,9 @@ std::vector<canSignal>vehData;
 std::string getTime();
 int getRandVal(int min, int max);
 void writeToFile(std::vector<canSignal> &vehData);
+void writeToDB(std::vector<canSignal> &vehData,char* filename);
+void openDB(const char* filename);
+
 
 
 
@@ -48,25 +57,45 @@ int getRandVal(int min, int max)
 
 void writeToFile(std::vector<canSignal>&vehData)
 {
-  std::ofstream myfile("canlog.txt");
+  std::ofstream myfile("canlog.csv");
   if(!myfile.is_open())
   {
     std::cerr<<"Fail failed to open\n";
   }
-  myfile << "Timestamp\tSOC\tSpeed\tRPM\n";
+  myfile << "Timestamp,SOC,Speed,RPM\n";
   canSignal temp;
   for(size_t i=0;i<vehData.size();i=i+3)
   {
     temp=vehData[i];
     
-    myfile<<vehData[i].timestamp<<"\t";
-    myfile<<vehData[i+1].value<<"\t";
-    myfile<<vehData[i+2].value<<"\t";
+    myfile<<vehData[i].timestamp<<",";
+    myfile<<vehData[i+1].value<<",";
+    myfile<<vehData[i+2].value<<",";
     myfile<<vehData[i+3].value<<"\n";
     
   }
   myfile.close();
- std::cout << "Data written to canlog.txt\n";
+ std::cout << "Data written to canlog.csv\n";
+
+}
+
+void writeToDB(std::vector<canSignal>&vehData, char* filename)
+{
+  
+}
+
+void openDB(const char* filename)
+{
+    sqlite3* db;
+    int opened = sqlite3_open(filename, &db);
+    if(opened)
+    { 
+        printf("Database could not be opened %s \n", sqlite3_errmsg(db)); // check if opening the database is successful
+    } 
+    else 
+    {
+        printf("opened database successfuly \n");
+    }
 
 }
 
@@ -98,11 +127,12 @@ int main()
     std::cout << speedSignal.sigName << ": " << speedSignal.value<< " | Timestamp: " << speedSignal.timestamp << "\n";
     std::cout << rpmSignal.sigName << ": " << rpmSignal.value<< " | Timestamp: " << rpmSignal.timestamp << "\n";
     std::cout << "------------------------\n";
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    //std::this_thread::sleep_for(std::chrono::seconds(3));
     i++;
 
 
   }
   writeToFile(vehData);
-  
+  const char* filename = "db.sqlite3";
+  openDB(filename);  
 }

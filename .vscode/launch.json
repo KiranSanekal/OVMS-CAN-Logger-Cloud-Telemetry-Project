@@ -5,13 +5,14 @@
             "name": "Run C++17 Project",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/main.exe",
+            "program": "${workspaceFolder}\\main.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
-            "preLaunchTask": "Build C++17",
-            "miDebuggerPath": "gdb.exe"
+            "preLaunchTask": "Build C++17 with SQLite",
+            "miDebuggerPath": "C:\\msys64\\ucrt64\\bin\\gdb.exe",
+            
         }
     ]
 }
