@@ -22,15 +22,14 @@ struct canSignal
     std::string sigName;
     int value;
     std::string timestamp;
-
 };
 std::vector<canSignal>vehData;
 std::string getTime();
 int getRandVal(int min, int max);
-void writeToFile(std::vector<canSignal> &vehData);
-void writeToDB(std::vector<canSignal> &vehData,char* filename);
-void openDB(const char* filename);
-
+void writeToCSV(std::vector<canSignal> &vehData);
+void insertRow(sqlite3* db, canSignal& soc, canSignal& speed, canSignal& rpm);
+sqlite3* openDB(const char* filename);
+void createTable(sqlite3* db);
 
 
 
@@ -55,7 +54,7 @@ int getRandVal(int min, int max)
 
 }
 
-void writeToFile(std::vector<canSignal>&vehData)
+void writeToCSV(std::vector<canSignal>&vehData)
 {
   std::ofstream myfile("canlog.csv");
   if(!myfile.is_open())
@@ -79,37 +78,61 @@ void writeToFile(std::vector<canSignal>&vehData)
 
 }
 
-void writeToDB(std::vector<canSignal>&vehData, char* filename)
-{
-  
-}
-
-void openDB(const char* filename)
+sqlite3* openDB(const char* filename)
 {
     sqlite3* db;
-    int opened = sqlite3_open(filename, &db);
-    if(opened)
-    { 
-        printf("Database could not be opened %s \n", sqlite3_errmsg(db)); // check if opening the database is successful
-    } 
-    else 
+    if (sqlite3_open(filename, &db) != SQLITE_OK) 
     {
-        printf("opened database successfuly \n");
+        std::cerr << "Cannot open database: " << sqlite3_errmsg(db) << std::endl;
+        return nullptr;
     }
+    return db;
+}
 
+void createTable(sqlite3* db)
+{
+    const char* sqlCreate =
+        "CREATE TABLE IF NOT EXISTS CANLOG ("
+        "ID INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "TIMESTAMP TEXT NOT NULL, "
+        "SOC INT NOT NULL, "
+        "SPEED INT NOT NULL, "
+        "RPM INT NOT NULL);";
+
+    if (sqlite3_exec(db, sqlCreate, nullptr, nullptr, nullptr) != SQLITE_OK) 
+    {
+        std::cerr << "Table creation failed: " << sqlite3_errmsg(db) << std::endl;
+    }
 }
 
 
 
+void insertRow(sqlite3* db, canSignal& soc, canSignal& speed, canSignal& rpm)
+{
+  std::ostringstream oss;
+  oss << "INSERT INTO CANLOG (TIMESTAMP, SOC, SPEED, RPM) VALUES ("
+      << "'" << soc.timestamp << "', "
+      << soc.value << ", "
+      << speed.value << ", "
+      << rpm.value << ");";
 
-
+  std::string sql = oss.str();
+  if (sqlite3_exec(db, sql.c_str(), nullptr, nullptr, nullptr) != SQLITE_OK)
+  {
+    std::cerr << "Insert failed: " << sqlite3_errmsg(db) << std::endl;
+  }
+}
 
 
 
 int main() 
-
-
 {
+   const char* filename = "db.sqlite3";
+  sqlite3* db = openDB(filename);
+  if (!db) return 1;
+  createTable(db);
+
+
   int i=0;
   while(i<10)
   {
@@ -121,7 +144,7 @@ int main()
     vehData.push_back(speedSignal);
     vehData.push_back(rpmSignal);
     std::cout<<"veh data size: "<<vehData.size()<<std::endl;
-
+    insertRow(db,socSignal,speedSignal,rpmSignal);
 
     std::cout << socSignal.sigName << ": " << socSignal.value << " | Timestamp: " << socSignal.timestamp << "\n";
     std::cout << speedSignal.sigName << ": " << speedSignal.value<< " | Timestamp: " << speedSignal.timestamp << "\n";
@@ -129,10 +152,11 @@ int main()
     std::cout << "------------------------\n";
     //std::this_thread::sleep_for(std::chrono::seconds(3));
     i++;
-
+    
 
   }
-  writeToFile(vehData);
-  const char* filename = "db.sqlite3";
-  openDB(filename);  
+  writeToCSV(vehData);
+  sqlite3_close(db);
+  return 0;
+
 }
